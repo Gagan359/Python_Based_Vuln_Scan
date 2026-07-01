@@ -40,7 +40,7 @@ VulnScan/
 ├── requirements.txt
 ├── templates/
 │   └── index.html
-└── static/
+└── static/styke.css
 ```
 
 ---
