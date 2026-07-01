@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vulnerability Scanner</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🛡️ Vulnerability Scanner</h1>
+
+    <p class="subtitle">
+        Scan a host, identify running services, and discover known CVEs.
+    </p>
+
+    <form method="POST">
+
+        <input
+            type="text"
+            name="target"
+            placeholder="Enter IP Address or Domain"
+            value="{{ target }}"
+            required>
+
+        <button type="submit">
+            🔍 Scan
+        </button>
+
+    </form>
+
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {% if results %}
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+            <tr>
+
+                <th>Host</th>
+                <th>Port</th>
+                <th>Service</th>
+                <th>Product</th>
+                <th>Version</th>
+                <th>Vulnerabilities</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for service in results %}
+
+            <tr>
+
+                <td>{{ service.host }}</td>
+
+                <td>{{ service.port }}</td>
+
+                <td>{{ service.service }}</td>
+
+                <td>{{ service.product }}</td>
+
+                <td>{{ service.version }}</td>
+
+                <td>
+
+                    {% if service.vulnerabilities %}
+
+                        {% for cve in service.vulnerabilities %}
+
+                        <details>
+
+                            <summary>
+
+                                <strong>{{ cve.id }}</strong>
+
+                                {% if cve.severity=="CRITICAL" %}
+                                    <span class="badge critical">{{ cve.severity }}</span>
+
+                                {% elif cve.severity=="HIGH" %}
+                                    <span class="badge high">{{ cve.severity }}</span>
+
+                                {% elif cve.severity=="MEDIUM" %}
+                                    <span class="badge medium">{{ cve.severity }}</span>
+
+                                {% elif cve.severity=="LOW" %}
+                                    <span class="badge low">{{ cve.severity }}</span>
+
+                                {% else %}
+                                    <span class="badge unknown">{{ cve.severity }}</span>
+
+                                {% endif %}
+
+                            </summary>
+
+                            <p>{{ cve.description }}</p>
+
+                        </details>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <span class="safe">✅ No CVEs Found</span>
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% endif %}
+
+    <footer>
+
+        Built with Python • Flask • Nmap • NVD API
+
+    </footer>
+
+</div>
+
+</body>
+</html>
